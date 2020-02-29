@@ -16,7 +16,7 @@ import {
 
 //import Permissions from 'expo-permissions';
 import FileSystem from 'expo-file-system';
-import Permissions from 'expo-image-picker';
+import * as Permissions from "expo-permissions";
 
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
@@ -54,7 +54,7 @@ export default class App extends React.Component {
       )
       .then(
         function(response) {
-          console.log(response.data.photos.photo);
+          // console.log(response.data.photos.photo);
           this.setState({ images: response.data.photos.photo, isLoading: false });
         }.bind(this)
       )
@@ -71,12 +71,9 @@ export default class App extends React.Component {
   }
 
   saveToCameraRoll = async image => {
-    let cameraPermissions = await Permissions.getAsync(Permissions.CameraRoll);
-    if (cameraPermissions.status !== 'granted') {
-      cameraPermissions = await Permissions.askAsync(Permissions.CameraRoll);
-    }
-
-    if (cameraPermissions.status == 'granted') {
+    const permission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+    console.log("P1: "+permission.status)
+    if (permission.status === "granted") {
       FileSystem.downloadAsync(
         image.url_c,
         FileSystem.documentDirectory + image.id + '.jpg'
@@ -92,6 +89,8 @@ export default class App extends React.Component {
       alert('Requires cameral roll permission');
     }
   };
+
+  
 
   showControls = item => {
     this.setState(
